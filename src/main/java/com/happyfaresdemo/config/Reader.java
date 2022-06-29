@@ -21,6 +21,7 @@ public class Reader {
 	public String scenario;
 	public String description;
 	public String keyword;
+	public String locatortype;
 	public String locator;
 	public String additionallocator;
 	public String testdata;
@@ -50,20 +51,23 @@ public class Reader {
 						keyword=c.getStringCellValue();
 						break;
 					case 4:
-						locator=c.getStringCellValue();
+						locatortype=c.getStringCellValue();
 						break;
 					case 5:
-						additionallocator=c.getStringCellValue();
+						locator=c.getStringCellValue();
 						break;
 					case 6:
-						testdata=c.getStringCellValue();
+						additionallocator=c.getStringCellValue();
 						break;
 					case 7:
+						testdata=c.getStringCellValue();
+						break;
+					case 8:
 						platform=c.getStringCellValue();
 						break;
 					}
 				}
-				Testentity tst=new Testentity(caseId, scenario, description, keyword, locator, additionallocator, testdata, platform);
+				Testentity tst=new Testentity(caseId, scenario, description, keyword, locatortype, locator, additionallocator, testdata, platform);
 				test.add(tst);
 			}
 		}

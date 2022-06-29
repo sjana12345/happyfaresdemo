@@ -6,6 +6,7 @@ public class Testentity {
 	public String scenario;
 	public String description;
 	public String keyword;
+	public String locatortype;
 	public String locator;
 	public String additionallocator;
 	public String testdata;
@@ -42,6 +43,14 @@ public class Testentity {
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
 	}
+	
+	public String getLocatortype() {
+		return locatortype;
+	}
+
+	public void setLocatortype(String locatortype) {
+		this.locatortype = locatortype;
+	}
 
 	public String getLocator() {
 		return locator;
@@ -75,13 +84,14 @@ public class Testentity {
 		this.platform = platform;
 	}
 
-	public Testentity(String caseId, String scenario, String description, String keyword, String locator,
-			String additionallocator, String testdata, String platform) {
+	public Testentity(String caseId, String scenario, String description, String keyword, String locatortype,
+			String locator, String additionallocator, String testdata, String platform) {
 		super();
 		this.caseId = caseId;
 		this.scenario = scenario;
 		this.description = description;
 		this.keyword = keyword;
+		this.locatortype = locatortype;
 		this.locator = locator;
 		this.additionallocator = additionallocator;
 		this.testdata = testdata;

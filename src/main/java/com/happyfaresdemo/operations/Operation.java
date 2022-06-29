@@ -11,9 +11,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.IAlterTestName;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -21,6 +24,8 @@ import com.happyfaresdemo.config.Reader;
 import com.happyfaresdemo.config.Webdriverconfig;
 import com.happyfaresdemo.entity.Testentity;
 import com.happyfaresdemo.utility.Filefilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Operation {
 
@@ -31,28 +36,75 @@ public class Operation {
 
 	@Test(invocationCount = 1)
 	public void perform() throws IOException, NumberFormatException, InterruptedException {
+		
+		Logger logger = LoggerFactory.getLogger("SampleLogger");
 		File[] files = Filefilter.getfiles();
 		Reader rs = new Reader();
 		List<Testentity> l = rs.testlist(files[count].getName());
-
+		logger.info("Executing "+files[count].getName()+" .........................................");
 		for (Testentity tn : l) {
 			switch (tn.getKeyword()) {
 			case "CLICK":
-				wm = driver.findElement(By.xpath(tn.getLocator()));
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					wm = driver.findElement(By.xpath(tn.getLocator()));
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					wm = driver.findElement(By.linkText(tn.getLocator()));
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					wm = driver.findElement(By.id(tn.getLocator()));
+				}
 				wm.click();
 				break;
 			case "SETTEXT":
-				wm = driver.findElement(By.xpath(tn.getLocator()));
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					wm = driver.findElement(By.xpath(tn.getLocator()));
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					wm = driver.findElement(By.linkText(tn.getLocator()));
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					wm = driver.findElement(By.linkText(tn.getLocator()));
+				}
+				wm.clear();
 				wm.sendKeys(tn.getTestdata());
 				break;
 			case "JS":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				JavascriptExecutor js = ((JavascriptExecutor) driver);
 				js.executeScript(tn.getTestdata());
 				break;
+			case "VALIDATION-VERIFY":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					Assert.assertEquals(driver.findElement(By.xpath(tn.getLocator())).getAttribute("validationMessage"), tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					Assert.assertEquals(driver.findElement(By.linkText(tn.getLocator())).getAttribute("validationMessage"), tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					Assert.assertEquals(driver.findElement(By.id(tn.getLocator())).getAttribute("validationMessage"), tn.getTestdata());
+					System.out.println(driver.findElement(By.id(tn.getLocator())).getAttribute("validationMessage"));
+				}
+				break;
 			case "VERIFY":
-				Assert.assertEquals(driver.findElement(By.xpath(tn.getLocator())).getText(), tn.getTestdata());
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					Assert.assertEquals(driver.findElement(By.xpath(tn.getLocator())).getText(), tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					Assert.assertEquals(driver.findElement(By.linkText(tn.getLocator())).getText(), tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					Assert.assertEquals(driver.findElement(By.id(tn.getLocator())).getText(), tn.getTestdata());
+				}
+				break;
+			case "SELECT":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					new Select(driver.findElement(By.xpath(tn.getLocator()))).selectByVisibleText(tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					new Select(driver.findElement(By.linkText(tn.getLocator()))).selectByVisibleText(tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					new Select(driver.findElement(By.id(tn.getLocator()))).selectByVisibleText(tn.getTestdata());
+				}				
 				break;
 			case "ACTION":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				wm = driver.findElement(By.xpath(tn.getLocator()));
 				Actions builder = new Actions(driver);
 				builder.moveToElement(wm).click().perform();
@@ -61,15 +113,30 @@ public class Operation {
 				wm.sendKeys(Keys.ENTER);
 				break;
 			case "SOFTVERIFY":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				SoftAssert sf = new SoftAssert();
-				sf.assertEquals(driver.findElement(By.xpath(tn.getLocator())).getText(), tn.getTestdata());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					sf.assertEquals(driver.findElement(By.xpath(tn.getLocator())).getText(), tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					sf.assertEquals(driver.findElement(By.linkText(tn.getLocator())).getText(), tn.getTestdata());
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					sf.assertEquals(driver.findElement(By.id(tn.getLocator())).getText(), tn.getTestdata());
+				}
 				break;
 			case "WAIT":
-				wm = driver.findElement(By.xpath(tn.getLocator()));
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
+				if(tn.getLocatortype().equalsIgnoreCase("xpath")) {
+					wm = driver.findElement(By.xpath(tn.getLocator()));
+				}else if(tn.getLocatortype().equalsIgnoreCase("linkText")) {
+					wm = driver.findElement(By.linkText(tn.getLocator()));
+				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
+					wm = driver.findElement(By.id(tn.getLocator()));
+				}				
 				WebDriverWait wait = new WebDriverWait(driver, timeout);
 				wait.until(ExpectedConditions.visibilityOf(wm));
 				break;
 			case "OPEN":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				Webdriverconfig wdfg = new Webdriverconfig();
 				if (tn.getPlatform().equalsIgnoreCase("chrome")) {
 					driver = wdfg.Chromeconfig(tn.getTestdata());
@@ -78,6 +145,7 @@ public class Operation {
 				}
 				break;
 			case "FIXWAIT":
+				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				Thread.sleep(Integer.parseInt(tn.getTestdata()));
 				break;
 			}

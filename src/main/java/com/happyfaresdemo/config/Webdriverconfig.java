@@ -17,7 +17,7 @@ public class Webdriverconfig {
 	public RemoteWebDriver Chromeconfig(String url) throws IOException {
 		DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("browserName", "chrome");
-        caps.setCapability("browserVersion", "103.0.5060.66");
+        caps.setCapability("browserVersion", "103");
         caps.setCapability("platformName", "Windows");
         ChromeOptions options = new ChromeOptions();
 	    Map<String, Object> prefs = new HashMap<String, Object>();
