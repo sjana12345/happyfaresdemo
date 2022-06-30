@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -27,6 +28,19 @@ public class Webdriverconfig {
 	    profile.put("managed_default_content_settings", contentSettings);
 	    prefs.put("profile", profile);
 	    options.setExperimentalOption("prefs", prefs);
+	    caps.setCapability(ChromeOptions.CAPABILITY, options);
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), caps);
+        driver.get(url);
+        driver.manage().window().maximize();
+        return driver;
+	}
+	
+	public RemoteWebDriver Firefoxconfig(String url) throws IOException {
+		DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("browserName", "firefox");
+        caps.setCapability("browserVersion", "101");
+        caps.setCapability("platformName", "Windows");
+        FirefoxOptions options = new FirefoxOptions();
 	    caps.setCapability(ChromeOptions.CAPABILITY, options);
         driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), caps);
         driver.get(url);

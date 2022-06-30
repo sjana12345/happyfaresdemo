@@ -150,8 +150,10 @@ public class Operation {
 				Webdriverconfig wdfg = new Webdriverconfig();
 				if (tn.getPlatform().equalsIgnoreCase("chrome")) {
 					driver = wdfg.Chromeconfig(tn.getTestdata());
+				} else if(tn.getPlatform().equalsIgnoreCase("firefox")){
+					driver = wdfg.Firefoxconfig(tn.getTestdata());
 				} else {
-					System.out.println(tn.getPlatform() + " not available");
+					logger.info("Broswer Not Available");
 				}
 				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
