@@ -37,11 +37,12 @@ public class Operation {
 	@Test(invocationCount = 1)
 	public void perform() throws IOException, NumberFormatException, InterruptedException {
 		
-		Logger logger = LoggerFactory.getLogger("SampleLogger");
+		Logger logger = LoggerFactory.getLogger("Happy Fares");
 		File[] files = Filefilter.getfiles();
 		Reader rs = new Reader();
 		List<Testentity> l = rs.testlist(files[count].getName());
 		logger.info("Executing "+files[count].getName()+" .........................................");
+		Reporter.log("Executing "+files[count].getName()+" .........................................");
 		for (Testentity tn : l) {
 			switch (tn.getKeyword()) {
 			case "CLICK":
@@ -54,6 +55,7 @@ public class Operation {
 					wm = driver.findElement(By.id(tn.getLocator()));
 				}
 				wm.click();
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "SETTEXT":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -66,11 +68,13 @@ public class Operation {
 				}
 				wm.clear();
 				wm.sendKeys(tn.getTestdata());
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "JS":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				JavascriptExecutor js = ((JavascriptExecutor) driver);
 				js.executeScript(tn.getTestdata());
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "VALIDATION-VERIFY":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -82,6 +86,7 @@ public class Operation {
 					Assert.assertEquals(driver.findElement(By.id(tn.getLocator())).getAttribute("validationMessage"), tn.getTestdata());
 					System.out.println(driver.findElement(By.id(tn.getLocator())).getAttribute("validationMessage"));
 				}
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "VERIFY":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -92,6 +97,7 @@ public class Operation {
 				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
 					Assert.assertEquals(driver.findElement(By.id(tn.getLocator())).getText(), tn.getTestdata());
 				}
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "SELECT":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -101,7 +107,8 @@ public class Operation {
 					new Select(driver.findElement(By.linkText(tn.getLocator()))).selectByVisibleText(tn.getTestdata());
 				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
 					new Select(driver.findElement(By.id(tn.getLocator()))).selectByVisibleText(tn.getTestdata());
-				}				
+				}
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "ACTION":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -111,6 +118,7 @@ public class Operation {
 				wm.sendKeys(Keys.DOWN);
 				wm.sendKeys(Keys.DOWN);
 				wm.sendKeys(Keys.ENTER);
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "SOFTVERIFY":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -122,6 +130,7 @@ public class Operation {
 				}else if(tn.getLocatortype().equalsIgnoreCase("id")) {
 					sf.assertEquals(driver.findElement(By.id(tn.getLocator())).getText(), tn.getTestdata());
 				}
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "WAIT":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -134,6 +143,7 @@ public class Operation {
 				}				
 				WebDriverWait wait = new WebDriverWait(driver, timeout);
 				wait.until(ExpectedConditions.visibilityOf(wm));
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "OPEN":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
@@ -143,10 +153,12 @@ public class Operation {
 				} else {
 					System.out.println(tn.getPlatform() + " not available");
 				}
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			case "FIXWAIT":
 				logger.info(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				Thread.sleep(Integer.parseInt(tn.getTestdata()));
+				Reporter.log(tn.getCaseId()+"-->"+tn.getScenario()+"--"+tn.getDescription());
 				break;
 			}
 		}
@@ -157,12 +169,18 @@ public class Operation {
 		try {
 			if (result.getStatus() == ITestResult.SUCCESS) {
 				count++;
+				Reporter.setCurrentTestResult(result);
+				Reporter.log("Testcase Passed");
 				driver.quit();
 			} else if (result.getStatus() == ITestResult.FAILURE) {
 				count++;
+				Reporter.setCurrentTestResult(result);
+				Reporter.log("Testcase Failed");
 				driver.quit();
 			} else if (result.getStatus() == ITestResult.SKIP) {
 				count++;
+				Reporter.setCurrentTestResult(result);
+				Reporter.log("Testcase Skipped");
 				driver.quit();
 			}
 		} catch (Exception e) {
